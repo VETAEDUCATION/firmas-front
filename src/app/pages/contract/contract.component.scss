@@ -1,0 +1,11 @@
+:host{
+    height: 100%;
+    >div{
+        display: flex;
+        height: 100%;
+        >pdf-viewer{
+            width: 80%;
+        }
+        
+    }
+}
