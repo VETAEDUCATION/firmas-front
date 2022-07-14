@@ -1,0 +1,13 @@
+{
+    "/api": {
+        "target": "http://localhost:2020",
+        "secure": false,
+        "pathRewrite": {
+            "^/api": ""
+        }
+    },
+    "/fileupload": {
+        "target": "http://localhost:2020",
+        "secure": false
+    }
+}

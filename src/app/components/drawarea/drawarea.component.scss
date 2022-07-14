@@ -1,20 +1,18 @@
-:host{
+:host {
 
     >div {
         display: flex;
         flex-direction: column;
-        width: 400px;
-        height: 220px;
-        border: 1px solid blue;
-        >canvas{
-            border: 1px solid yellow;
+        >canvas {
+            width: 400px;
+            height: 200px;
         }
+
         >div {
             display: flex;
-            border: 1px solid red;
+
             >div {
                 width: 50%;
-                border: 1px solid green;
             }
         }
     }

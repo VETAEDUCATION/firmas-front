@@ -1,8 +1,8 @@
-<div>
-    <canvas #canvas></canvas>
+<div class="p-1">
+    <p class="mb-2">{{title}}</p>
+    <canvas class="border" #canvas></canvas>
     <div>
-        <div (click)="clearCanvas()">Limpiar</div>
-        <div (click)="saveCanvas()">Guardar</div>
+        <div class="btn btn-sm btn-secondary me-1" (click)="clearCanvas()">Limpiar</div>
+        <div class="btn btn-sm btn-primary ms-1" (click)="saveCanvas()">Guardar</div>
     </div>
 </div>
-<img #save src="">

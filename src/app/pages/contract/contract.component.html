@@ -1,5 +1,9 @@
 <div>
-    <pdf-viewer [src]="'/assets/index.pdf'" [render-text]="true" [original-size]="false" >
+    <pdf-viewer [src]="link" [render-text]="true" [original-size]="false">
     </pdf-viewer>
-    <app-drawarea></app-drawarea>
+    <div class="d-flex flex-column">
+        <img src="/assets/web-MMM-13.png" alt="logo" width="400" height="auto">
+        <app-drawarea class="mb-2" [title]="title[signIndex]" (onSign)="save($event,signIndex)"
+            *ngFor="let signIndex of signs"></app-drawarea>
+    </div>
 </div>

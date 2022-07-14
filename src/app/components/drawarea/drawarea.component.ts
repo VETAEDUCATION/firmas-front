@@ -1,10 +1,4 @@
-import {
-	Component,
-	Input,
-	ElementRef,
-	AfterViewInit,
-	ViewChild
-} from '@angular/core';
+import { Component, Input, Output, ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 
@@ -16,10 +10,13 @@ import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 export class DrawareaComponent {
 
 	@ViewChild('canvas') public canvas: ElementRef | undefined;
-	@ViewChild('save') public saveImage: ElementRef | undefined;
 
 	@Input() public width = 400;
 	@Input() public height = 200;
+
+	@Output() onSign: EventEmitter<any> = new EventEmitter<any>();
+
+	@Input() public title = '';
 
 	private cx: CanvasRenderingContext2D | null | undefined;
 
@@ -33,13 +30,16 @@ export class DrawareaComponent {
 
 		if (!this.cx) throw 'Cannot get context';
 
+		this.cx.fillStyle = "#FFF";
+		this.cx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+
 		this.cx.lineWidth = 3;
 		this.cx.lineCap = 'round';
 		this.cx.strokeStyle = '#000';
 
 		this.captureEvents(canvasEl);
 	}
-
+	active = true;
 	private captureEvents(canvasEl: HTMLCanvasElement) {
 		// this will capture all mousedown events from the canvas element
 		fromEvent(canvasEl, 'mousedown')
@@ -83,9 +83,7 @@ export class DrawareaComponent {
 		prevPos: { x: number; y: number },
 		currentPos: { x: number; y: number }
 	) {
-		if (!this.cx) {
-			return;
-		}
+		if (!this.cx || !this.active) return;
 
 		this.cx.beginPath();
 
@@ -97,21 +95,15 @@ export class DrawareaComponent {
 	}
 
 	public clearCanvas() {
-		if (!this.cx) {
-			return;
-		}
+		if (!this.cx) return;
 		this.cx.clearRect(0, 0, this.width, this.height);
-		console.log('asda');
-		
-		if (this.saveImage) {
-			this.saveImage.nativeElement.src = '';
-		}
+		this.active = true;
+		this.ngAfterViewInit();
 	}
 	public saveCanvas() {
-		if (!this.canvas || !this.saveImage) {
-			return;
-		}
-		this.saveImage.nativeElement.src = this.canvas.nativeElement.toDataURL("image/png")
+		if (!this.canvas || !this.cx) return;
 
+		this.onSign.emit(this.canvas.nativeElement.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", ""))
+		this.active = false;
 	}
 }
