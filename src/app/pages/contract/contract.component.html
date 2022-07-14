@@ -3,7 +3,15 @@
     </pdf-viewer>
     <div class="d-flex flex-column">
         <img src="/assets/web-MMM-13.png" alt="logo" width="400" height="auto">
-        <app-drawarea class="mb-2" [title]="title[signIndex]" (onSign)="save($event,signIndex)"
-            *ngFor="let signIndex of signs"></app-drawarea>
+        <ng-container *ngIf="step == 1">
+            <app-drawarea class="mb-2" [title]="title[signIndex]" (onSign)="save($event,signIndex)" *ngFor="let signIndex of signs"></app-drawarea>
+        </ng-container>
+        <ng-container *ngIf="step == 2">
+            <h1>Firmado!</h1>
+            <a href="{{link}}" class="btn btn-small btn-primary" download>Descargar</a>
+        </ng-container>
+        {{step}}
     </div>
+
+
 </div>

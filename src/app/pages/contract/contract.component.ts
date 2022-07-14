@@ -44,12 +44,22 @@ export class ContractComponent implements OnInit {
 		return blob;
 	}
 
+	signed: number[] = [];
+	step: number = 1;
+	onSuccess(signIndex: number) {
+		console.log('firmado');
+		this.signed.push(signIndex);
+
+		if (this.signed.length === this.signs.length)
+			this.step = 2;
+	}
+
 	save(signData: Event, signIndex: number) {
 		const imageName = `${this.id} ${signIndex}.jpg`;
 		const imageBlob = this.dataURLtoBlob(signData.toString());
 		const imageFile = new File([imageBlob], imageName, { type: 'image/jpeg' });
-
-		this.api.sendFile(imageFile);
+		this.onSuccess(signIndex);
+		// this.api.sendFile(imageFile);
 	}
 
 }
