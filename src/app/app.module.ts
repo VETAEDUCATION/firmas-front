@@ -9,12 +9,14 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { AppComponent } from './app.component';
 import { DrawareaComponent } from './components/drawarea/drawarea.component';
 import { ContractComponent } from './pages/contract/contract.component';
+import { CompanyComponent } from './pages/company/company.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DrawareaComponent,
-    ContractComponent
+    ContractComponent,
+    CompanyComponent
   ],
   imports: [
     BrowserModule,

@@ -4,11 +4,11 @@ import { ApiService } from 'src/app/services/api.service';
 import { HttpClient } from "@angular/common/http";
 
 @Component({
-	selector: 'app-contract',
-	templateUrl: './contract.component.html',
-	styleUrls: ['./contract.component.scss']
+  selector: 'app-company',
+  templateUrl: './company.component.html',
+  styleUrls: ['./company.component.scss']
 })
-export class ContractComponent implements OnInit {
+export class CompanyComponent implements OnInit {
 	link: string = '';
 	linkAux: string = '';
 	id: string | null;
@@ -23,7 +23,7 @@ export class ContractComponent implements OnInit {
 	drawareaWidth: number = 400;
 
 	title = [
-		'Main Applicant',
+		'Company',
 		'Secondary Applicant',
 		'First Dependent',
 		'Second Dependent',
@@ -39,17 +39,17 @@ export class ContractComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.api.send('GET', `contracts?id=${this.id}`).then(res => {
-			this.link = res.data[0].pdflink;
-			this.linkAux = res.data[0].pdflink;
-			this.signs = Array.from(Array(res.data[0].signatures_no).keys());
+			this.link = res.data[0].pdfcompanylink;
+			this.linkAux = res.data[0].pdfcompanylink;
+			this.signs = Array.from(Array(1).keys());
 
-			this.signedPdf = res.data[0].signature_path ? JSON.parse(res.data[0].signature_path) : [];
+			this.signedPdf = res.data[0].signature_company_path ? res.data[0].signature_company_path : [];
 
 			if ((this.signedPdf.length == this.signs.length) && this.signedPdf.filter(el => el).length) {
 				this.step = 2;
 			}
 		});
-		this.drawareaWidth = window.innerWidth > 900 ? window.innerWidth * .2 : window.innerWidth;
+		this.drawareaWidth = window.innerWidth > 900 ? window.innerWidth * .2 : window.innerWidth;    
 	}
 
 	dataURLtoBlob(dataURL: string) {
@@ -67,7 +67,6 @@ export class ContractComponent implements OnInit {
 		this.signed.push(signIndex);
 
 		this.http.get<any>(`http://ec2-34-239-163-93.compute-1.amazonaws.com/update_recibo.php?rid=${this.id}`).subscribe((res: any) => {
-			console.log(res);
 			this.showPdf = false;
 			setTimeout(() => {
 				this.showPdf = true;
@@ -77,8 +76,7 @@ export class ContractComponent implements OnInit {
 		if ((this.signed.length + this.signedPdf.length) === this.signs.length) {
 			this.step = 2;
 
-			this.http.get<any>(`http://ec2-34-239-163-93.compute-1.amazonaws.com/send_notification.php?rid=${this.id}`).subscribe((res: any) => {
-				console.log(res);
+			this.http.get<any>(`http://ec2-34-239-163-93.compute-1.amazonaws.com/send_notification_company.php?rid=${this.id}`).subscribe((res: any) => {
 				this.showPdf = false;
 				setTimeout(() => {
 					this.showPdf = true;
@@ -88,7 +86,7 @@ export class ContractComponent implements OnInit {
 	}
 
 	save(signData: Event, signIndex: number) {
-		const imageName = `${this.id} ${signIndex}.jpg`;
+		const imageName = `${this.id} company.jpg`;
 		const imageBlob = this.dataURLtoBlob(signData.toString());
 		const imageFile = new File([imageBlob], imageName, { type: 'image/jpeg' });
 		this.api.sendFile(imageFile).then(res => {

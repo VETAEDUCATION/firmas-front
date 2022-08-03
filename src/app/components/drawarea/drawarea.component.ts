@@ -18,6 +18,8 @@ export class DrawareaComponent {
 
 	@Input() public title = '';
 
+	notSend: boolean = true;
+
 	private cx: CanvasRenderingContext2D | null | undefined;
 
 	public ngAfterViewInit() {
@@ -38,7 +40,19 @@ export class DrawareaComponent {
 		this.cx.strokeStyle = '#000';
 
 		this.captureEvents(canvasEl);
+		this.disableScrollonTouch(canvasEl);
+
 	}
+
+	private disableScrollonTouch(canvasEl: HTMLCanvasElement) {
+
+
+		canvasEl.addEventListener("touchstart", function (event) { event.preventDefault() })
+		canvasEl.addEventListener("touchmove", function (event) { event.preventDefault() })
+		canvasEl.addEventListener("touchend", function (event) { event.preventDefault() })
+		canvasEl.addEventListener("touchcancel", function (event) { event.preventDefault() })
+	}
+
 	active = true;
 	private captureEvents(canvasEl: HTMLCanvasElement) {
 		// this will capture all mousedown events from the canvas element
@@ -77,6 +91,44 @@ export class DrawareaComponent {
 				// this method we'll implement soon to do the actual drawing
 				this.drawOnCanvas(prevPos, currentPos);
 			});
+
+		fromEvent(canvasEl, 'touchstart')
+			.pipe(
+				switchMap(e => {
+					// after a mouse down, we'll record all mouse moves
+					return fromEvent(canvasEl, 'touchmove').pipe(
+						// we'll stop (and unsubscribe) once the user releases the mouse
+						// this will trigger a 'mouseup' event
+						takeUntil(fromEvent(canvasEl, 'touchend')),
+						// we'll also stop (and unsubscribe) once the mouse leaves the canvas (mouseleave event)
+						takeUntil(fromEvent(canvasEl, 'touchleave')),
+						// pairwise lets us get the previous value to draw a line from
+						// the previous point to the current point
+						pairwise()
+					);
+				})
+			)
+			.subscribe((res) => {
+
+				const rect = canvasEl.getBoundingClientRect();
+				const prevMouseEvent: Touch = (res[0] as TouchEvent).changedTouches[0];
+				const currMouseEvent: Touch = (res[1] as TouchEvent).changedTouches[0];
+
+				// previous and current position with the offset
+				const prevPos = {
+					x: prevMouseEvent.clientX - rect.left,
+					y: prevMouseEvent.clientY - rect.top
+				};
+
+				const currentPos = {
+					x: currMouseEvent.clientX - rect.left,
+					y: currMouseEvent.clientY - rect.top
+				};
+
+				// this method we'll implement soon to do the actual drawing
+				this.drawOnCanvas(prevPos, currentPos);
+			});
+
 	}
 
 	private drawOnCanvas(
@@ -105,5 +157,6 @@ export class DrawareaComponent {
 
 		this.onSign.emit(this.canvas.nativeElement.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", ""))
 		this.active = false;
+		this.notSend = false;
 	}
 }

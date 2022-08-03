@@ -1,7 +1,7 @@
 <div class="p-1">
     <p class="mb-2">{{title}}</p>
     <canvas class="border" #canvas></canvas>
-    <div>
+    <div *ngIf="notSend">
         <div class="btn btn-sm btn-secondary me-1" (click)="clearCanvas()">Limpiar</div>
         <div class="btn btn-sm btn-primary ms-1" (click)="saveCanvas()">Guardar</div>
     </div>
